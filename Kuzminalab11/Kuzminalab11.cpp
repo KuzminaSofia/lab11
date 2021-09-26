@@ -3,28 +3,32 @@
 
 #include "pch.h"
 #include <iostream>
-
+using namespace std;
 struct Pipe
 {
     int id;
     int d;
     int l;
+    string r;
 };
 
 
 void PrintePipe(Pipe& p)
 {
-    std::cout << "Pipe ID number: " << p.id << "  Diameter: " << p.d << " mm " << " Lenght: " << p.l << " km ";
+    cout << "Pipe ID number: " << p.id << "  Diameter: " << p.d << " mm " << " Lenght: " << p.l << " km \n" ;
+    cout << "Pipe under repair: " << p.r;
 }
 
 Pipe AddPipe()
 {
     Pipe p;
     p.id = 0;
-    std::cout << "Enter the diameter ";
-    std::cin >> p.d;
-    std::cout << "Enter the lenght ";
-    std::cin >> p.l;
+    cout << "Enter the diameter ";
+    cin >> p.d;
+    cout << "Enter the lenght ";
+    cin >> p.l;
+    cout << "Is the pipe repaired?";
+    cin >> p.r;
     return p;
 }
 
