@@ -10,15 +10,28 @@ struct Pipe
     int d;
     int l;
     string r;
+ 
+};
+
+struct CS
+{
+    int id;
+    string name;
+    int col_cex; // количество цехов
+    int col_work; // количество в работе 
+    double effic; // эффективность
 };
 
 
 void PrintePipe(Pipe& p)
 {
     cout << "Pipe ID number: " << p.id << "  Diameter: " << p.d << " mm " << " Lenght: " << p.l << " km \n" ;
-    cout << "Pipe under repair: " << p.r;
+    cout << "Pipe under repair: " << p.r<<endl;
 }
-
+void PrinteCS(CS& station)
+{
+    cout << "CS ID number: " << station.id << "Name: " << station.name << "Number of shops: " << station.col_cex << "Work: " << station.col_work;
+}
 Pipe AddPipe()
 {
     Pipe p;
@@ -31,11 +44,25 @@ Pipe AddPipe()
     cin >> p.r;
     return p;
 }
+CS AddCS()
+{
+    CS station;
+    station.id = 0;
+    cout << "Enter the name ";
+    cin >> station.name;
+    cout << "How many shops are there? "; // сколько цехов в станции?
+    cin >> station.col_cex;
+    cout << "How many shops do we have in the job? "; // сколько цехов в работе?
+    cin >> station.col_work;
+    return station;
 
+}
 int main()
 {
     Pipe p = AddPipe();
     PrintePipe(p);
+    CS station = AddCS();
+    PrinteCS(station);
 }
 
 
