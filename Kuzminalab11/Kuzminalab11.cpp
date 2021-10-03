@@ -9,7 +9,7 @@ struct Pipe
     int id;
     int d;
     int l;
-    string r;
+    bool r;
  
 };
 
@@ -59,10 +59,28 @@ CS AddCS()
 }
 int main()
 {
-    Pipe p = AddPipe();
-    PrintePipe(p);
-    CS station = AddCS();
-    PrinteCS(station);
+    int m; // создали меню
+    Pipe p;
+    CS station;
+    cout << "\n 1. Exit\n 2. Add pipe\n 3. Add CS\n 4. All objects\n ";
+    cin >> m;
+    switch (m)
+    {
+    case 1:
+        return 0;
+    case 2:
+        p = AddPipe();
+        break;
+    case 3:
+        station = AddCS();
+        break;
+    case 4:
+        PrintePipe(p);
+        PrinteCS(station);
+        break;
+
+    }
+   
 }
 
 
