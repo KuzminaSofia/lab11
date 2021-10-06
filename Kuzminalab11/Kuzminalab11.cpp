@@ -7,7 +7,7 @@ using namespace std;
 struct Pipe
 {
     int id;
-    int d;
+    int d; 
     int l;
     bool r;
  
@@ -26,7 +26,7 @@ struct CS
 void PrintePipe(Pipe& p)
 {
     cout << "Pipe ID number: " << p.id << "  Diameter: " << p.d << " mm " << " Lenght: " << p.l << " km \n" ;
-    cout << "Pipe under repair: " << p.r<<endl;
+    cout << "Pipe under repair: " << p.r <<endl;
 }
 void PrinteCS(CS& station)
 {
@@ -40,8 +40,9 @@ Pipe AddPipe()
     cin >> p.d;
     cout << "Enter the lenght ";
     cin >> p.l;
-    cout << "Is the pipe repaired?";
-    cin >> p.r;
+    p.r = 0;
+   // cout << "Is the pipe repaired?";
+   // cin >> p.r;
     return p;
 }
 CS AddCS()
@@ -50,38 +51,87 @@ CS AddCS()
     station.id = 0;
     cout << "Enter the name ";
     cin >> station.name;
-    cout << "How many shops are there? "; // сколько цехов в станции?
+    cout << "How many shops are there? ";                  // сколько цехов в станции?
     cin >> station.col_cex;
-    cout << "How many shops do we have in the job? "; // сколько цехов в работе?
+    cout << "How many shops do we have in the job? ";      // сколько цехов в работе?
     cin >> station.col_work;
     return station;
 
 }
+Pipe editpipe(Pipe& p)                                    //редактор трубы
+{
+    if (p.l > 1) //существует
+    {
+        cout << "Work 0";
+        cin >> p.r;
+    }
+    else cout << "ƒобавьте трубу";
+        return p;
+}
+
+CS editcs(CS& station)                                   //редактор компрессорной станции
+{
+    if (station.col_cex > 0)
+    {
+        cout << "—колько цехов в работе сейчас?";
+        cin >> station.col_cex;
+    }
+    else cout << "ƒобавьте цех";
+    return station;
+
+}
+
 int main()
 {
+
     int m; // создали меню
-    Pipe p;
-    CS station;
-    cout << "\n 1. Exit\n 2. Add pipe\n 3. Add CS\n 4. All objects\n ";
-    cin >> m;
-    switch (m)
-    {
-    case 1:
-        return 0;
-    case 2:
-        p = AddPipe();
-        break;
-    case 3:
-        station = AddCS();
-        break;
-    case 4:
-        PrintePipe(p);
-        PrinteCS(station);
-        break;
+
+    Pipe p = {};
+    CS station = {};
+
+    for (;;) {
+        cout << "\n 1. Exit\n 2. Add pipe\n 3. Add CS\n 4. All objects\n 5. EditPipe\n 6. EditCS\n 7. Save\n 8. Dowland\n";
+        cin >> m;
+        switch (m)
+        {
+        case 1:
+
+            return 0;
+
+        case 2:
+
+            system("cls");
+            p = AddPipe();
+            break;
+
+        case 3:
+            system("cls");
+            station = AddCS();
+            break;
+
+        case 4:
+
+            system("cls");
+            PrintePipe(p);
+            PrinteCS(station);
+            break;
+
+        case 5:
+            system("cls");
+            editpipe(p);
+            break;
+
+        case 6:
+            system("cls");
+            editcs(station);
+            break;
+
+        }
 
     }
-   
-}
+
+    }
+
 
 
 
