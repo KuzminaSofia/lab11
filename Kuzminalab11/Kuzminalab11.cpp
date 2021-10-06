@@ -25,12 +25,12 @@ struct CS
 
 void PrintePipe(Pipe& p)
 {
-    cout << "Pipe ID number: " << p.id << "  Diameter: " << p.d << " mm " << " Lenght: " << p.l << " km \n" ;
-    cout << "Pipe under repair: " << p.r <<endl;
+    cout << " Pipe ID number: " << p.id << "  Diameter: " << p.d << " mm " << " Lenght: " << p.l << " km \n" ;
+    cout << " Pipe under repair: " << p.r <<endl;
 }
 void PrinteCS(CS& station)
 {
-    cout << "CS ID number: " << station.id << "Name: " << station.name << "Number of shops: " << station.col_cex << "Work: " << station.col_work;
+    cout << " CS ID number: " << station.id << " Name: " << station.name << " Number of shops: " << station.col_cex << " Work: " << station.col_work;
 }
 Pipe AddPipe()
 {
@@ -38,8 +38,18 @@ Pipe AddPipe()
     p.id = 0;
     cout << "Enter the diameter ";
     cin >> p.d;
+    while (p.d < 400 || p.d > 2000)
+    {
+        cout << "ВВедите число из промежутка [400;2000] mm ";
+        cin >> p.d;
+    }
     cout << "Enter the lenght ";
     cin >> p.l;
+    while (p.l < 10 || p.l > 100)
+    {
+        cout << "Введите число из промежутка [10;100] km ";
+        cin >> p.l; 
+    }
     p.r = 0;
    // cout << "Is the pipe repaired?";
    // cin >> p.r;
@@ -55,6 +65,12 @@ CS AddCS()
     cin >> station.col_cex;
     cout << "How many shops do we have in the job? ";      // сколько цехов в работе?
     cin >> station.col_work;
+
+    while (station.col_work > station.col_cex)
+    {
+        cout << "Количество рабочих больше чем всего цехов";
+        cin >> station.col_work;
+    }
     return station;
 
 }
@@ -62,7 +78,7 @@ Pipe editpipe(Pipe& p)                                    //редактор трубы
 {
     if (p.l > 1) //существует
     {
-        cout << "Work 0";
+        cout << "Work 0";                            //не работает ничего кроме 1 и 0, вылетает прога
         cin >> p.r;
     }
     else cout << "Добавьте трубу";
