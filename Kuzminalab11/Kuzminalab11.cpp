@@ -4,6 +4,8 @@
 #include "pch.h"
 #include <iostream>
 #include <fstream>
+#include <string>
+
 using namespace std;
 struct Pipe
 {
@@ -23,16 +25,69 @@ struct CS
     double effic;                                                                              // эффективность
 };
 
-
-void PrintePipe(Pipe& p)
+int ProvInt()   //proverka
 {
-    cout << " Труба под номером: " << p.id << "  Диаметр: " << p.d << " мм " << " Длина: " << p.l << " км\n" ;
-    cout << " Труба в ремонте: " << p.r <<endl;
+    for (;;)
+    {
+        int num;
+        cin >> num;
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(256, '\n');
+            cout << "Введите переменную int";
+        }
+        else
+        {
+            return num;
+        }
+    }
 }
 
-void PrinteCS(CS& station)
+bool ProvBool()
 {
-    cout << " Номер кс: " << station.id << " Имя: " << station.name << " Количество цехов: " << station.col_cex << " Количество цехов в работе: " << station.col_work;
+    for (;;)
+    {
+        bool num;
+        cin >> num;
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(256, '\n');
+            cout << " Введите тип bool \n";
+
+        }
+        else
+        {
+            return num;
+        }
+    }
+}
+
+
+void PrintePipe( const Pipe& p)
+{
+    if (p.l > 1)
+    {
+    cout << " Труба под номером: " << p.id << "  Диаметр: " << p.d << " мм " << " Длина: " << p.l << " км\n" ;
+    cout << " Труба в ремонте: " << p.r << endl; }
+    else
+    {
+        cout << "  Нет трубы \n";
+    }
+}
+
+void PrinteCS( const CS& station)
+{
+    if (station.col_cex > 0)
+    {
+        cout << " Номер кс: " << station.id << " Имя: " << station.name << " Количество цехов: " << station.col_cex << " Количество цехов в работе: " << station.col_work;
+    }
+    else
+    {
+        cout << "  Нет компрессорной станции \n";
+    }
+    
 }
 
 Pipe AddPipe()
@@ -40,18 +95,18 @@ Pipe AddPipe()
     Pipe p;
     p.id = 0;
     cout << "Введите диаметр: ";
-    cin >> p.d; 
+    p.d = ProvInt(); 
     while (p.d < 400 || p.d > 2000)
     {
         cout << "ВВедите число из промежутка [400;2000] mm \n";
-        cin >> p.d;
+        p.d = ProvInt();
     }
     cout << "Введите длину: ";
-    cin >> p.l;
-    while (p.l < 10 || p.l > 100)
+    p.l = ProvInt();
+    while (p.l < 10 || p.l > 1234)
     {
-        cout << "Введите число из промежутка [10;100] km \n";
-        cin >> p.l; 
+        cout << "Введите число из промежутка [10;1234] km \n";
+        p.l = ProvInt();
     }
     p.r = 0;
    // cout << "Is the pipe repaired?";
@@ -63,16 +118,17 @@ CS AddCS()
     CS station;
     station.id = 0;
     cout << "Введите имя кс ";
-    cin >> station.name;
+    cin >> ws;
+    getline(cin, station.name);
     cout << "Сколько цехов в станции? ";                                                  // сколько цехов в станции?
-    cin >> station.col_cex;
+    station.col_cex = ProvInt();
     cout << "Сколько цехов в работе? ";                                                   // сколько цехов в работе?
-    cin >> station.col_work;
+    station.col_work = ProvInt();
 
     while (station.col_work > station.col_cex)
     {
         cout << "Количество рабочих больше чем всего цехов. Пожалуйста, введите новое значение: ";
-        cin >> station.col_work;
+        station.col_work = ProvInt();
     }
     return station;
 
@@ -81,13 +137,9 @@ void editpipe(Pipe& p)                                                          
 {
     if (p.l > 1)                                                                        //существует
     {
+        
         cout << "Если труба в работе нажмите - 0, если в ремонте - 1 \n";               //не работает ничего кроме 1 и 0, вылетает прога
-        cin >> p.r;
-    //  while (p.r != 0 || p.r != 1)
-    //  {
-    //      cout << "Введите 1 или 0 ";
-    //      cin >> p.r;
-    // }
+        p.r = ProvBool();
     }
     else cout << "Добавьте трубу";
 }
@@ -97,11 +149,11 @@ void editcs(CS& station)                                                        
     if (station.col_cex > 0)
     {
         cout << "Сколько цехов в работе сейчас?";
-        cin >> station.col_work;
+        station.col_work = ProvInt();
         while (station.col_work > station.col_cex)                                      //проверка на количество рабочих цехов в редакторе
         {
             cout << "Количество рабочих больше чем всего цехов. Пожалуйста, введите новое значение: \n";
-            cin >> station.col_work;
+            station.col_work = ProvInt();
         }
 
     }
@@ -109,30 +161,33 @@ void editcs(CS& station)                                                        
 
 }
 
-void Save(Pipe p, CS station)                                                          //сохранение в файл
+void Save( const Pipe& p, const CS& station)                                                          //сохранение в файл
 {
     ofstream file;
-    file.open("vyvod.txt");
+    file.open("savep.txt", ios_base::out);
     if (file.good())
     {
-        if (p.l > 0)
+        if (p.l > 1)
         {
-            file << "Pipe: \n";
-            file << p.id << "\n";
-            file << p.d << "\n";
-            file << p.l << "\n";
-            file << p.r << "\n";
+            file << "Pipe: " << endl;
+            file << p.id << endl;
+            file << p.d << endl;
+            file << p.l << endl;
+            file << p.r << endl;
         }
-        if (station.name != "")
+        if (station.col_cex > 0)
         {
             file << "CS: \n";
-            file << station.id << "\n";
-            file << station.name << "\n";
-            file << station.col_cex << "\n";
-            file << station.col_work << "\n";
+            file << station.id << endl;
+            file << station.name << endl;
+            file << station.col_cex << endl;
+            file << station.col_work << endl;
         }
         file.close();
         cout << "Сохранено\n";
+    }
+    else {
+        cout << "хуйня переделывай";
     }
 
 }
@@ -155,7 +210,7 @@ int main()
 
     for (;;) {
         cout << "\n 1. Выход\n 2. Добавить трубу\n 3. Добавить кс\n 4. Показать все объекты\n 5. Редактировать трубу\n 6. Редактировать кс\n 7. Сохранить\n 8. Загрузить\n";
-        cin >> m;
+        m = ProvInt();
         switch (m)
         {
         case 1:
