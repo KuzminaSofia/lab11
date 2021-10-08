@@ -177,7 +177,7 @@ void Save( const Pipe& p, const CS& station)                                    
         }
         if (station.col_cex > 0)
         {
-            file << "CS: \n";
+            file << "CS: " << endl;
             file << station.id << endl;
             file << station.name << endl;
             file << station.col_cex << endl;
@@ -188,6 +188,40 @@ void Save( const Pipe& p, const CS& station)                                    
     }
     else {
         cout << "хуйн€ переделывай";
+    }
+
+}
+
+void Doload(Pipe& p, CS& station)
+{
+    ifstream file;
+    file.open("savep.txt");
+    if (file.good())
+    {
+        while (!file.eof())
+        {
+            string text;
+            file >> text;
+            cout << text << endl;
+            if (text == "Pipe: ")
+            {
+                file >> p.id;
+                file >> p.d;
+                file >> p.l;
+                file >> p.r;
+            }
+            if (text == "CS: ")
+            {
+                file >> station.id;
+                file >> station.name;
+                file >> station.col_cex;
+                file >> station.col_work;
+
+
+            }
+         
+
+        }
     }
 
 }
@@ -248,6 +282,14 @@ int main()
             system("cls");
             Save(p, station);
             break;
+        case 8:
+            system("cls");
+            Doload(p, station);
+            break;
+        default:
+            cout << "¬ведите пункт из меню";
+            break;
+
 
 
         }
