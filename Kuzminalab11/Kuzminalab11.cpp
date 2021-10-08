@@ -10,7 +10,7 @@ struct Pipe
     int id;
     int d; 
     int l;
-    bool r;  // была bool
+    bool r;  // ?
  
 };
 
@@ -39,18 +39,18 @@ Pipe AddPipe()
 {
     Pipe p;
     p.id = 0;
-    cout << "Введите диаметр ";
+    cout << "Введите диаметр: ";
     cin >> p.d; 
     while (p.d < 400 || p.d > 2000)
     {
-        cout << "ВВедите число из промежутка [400;2000] mm ";
+        cout << "ВВедите число из промежутка [400;2000] mm \n";
         cin >> p.d;
     }
-    cout << "Введите длину ";
+    cout << "Введите длину: ";
     cin >> p.l;
     while (p.l < 10 || p.l > 100)
     {
-        cout << "Введите число из промежутка [10;100] km ";
+        cout << "Введите число из промежутка [10;100] km \n";
         cin >> p.l; 
     }
     p.r = 0;
@@ -77,33 +77,35 @@ CS AddCS()
     return station;
 
 }  
-Pipe editpipe(Pipe& p)                                                                   //редактор трубы
+void editpipe(Pipe& p)                                                                  //редактор трубы
 {
-    if (p.l > 1)                                                                         //существует
+    if (p.l > 1)                                                                        //существует
     {
         cout << "Если труба в работе нажмите - 0, если в ремонте - 1 \n";               //не работает ничего кроме 1 и 0, вылетает прога
         cin >> p.r;
-      //  while (p.r != 0 || p.r != 1)
-      //  {
-      //      cout << "Введите 1 или 0 ";
-      //      cin >> p.r;
-      // }
-      
-
+    //  while (p.r != 0 || p.r != 1)
+    //  {
+    //      cout << "Введите 1 или 0 ";
+    //      cin >> p.r;
+    // }
     }
     else cout << "Добавьте трубу";
-        return p;
 }
 
-CS editcs(CS& station)                                                                  //редактор компрессорной станции
+void editcs(CS& station)                                                                 //редактор компрессорной станции
 {
     if (station.col_cex > 0)
     {
         cout << "Сколько цехов в работе сейчас?";
-        cin >> station.col_cex;
+        cin >> station.col_work;
+        while (station.col_work > station.col_cex)                                      //проверка на количество рабочих цехов в редакторе
+        {
+            cout << "Количество рабочих больше чем всего цехов. Пожалуйста, введите новое значение: \n";
+            cin >> station.col_work;
+        }
+
     }
     else cout << "Добавьте цех";
-    return station;
 
 }
 
@@ -132,7 +134,10 @@ void Save(Pipe p, CS station)                                                   
         file.close();
         cout << "Сохранено\n";
     }
+
 }
+
+
 
 
 
