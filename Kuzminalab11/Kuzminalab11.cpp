@@ -44,7 +44,7 @@ int ProvInt()   //proverka
     }
 }
 
-bool ProvBool()
+bool ProvBool()    //для ремонта трубы
 {
     for (;;)
     {
@@ -81,7 +81,7 @@ void PrinteCS( const CS& station)
 {
     if (station.col_cex > 0)
     {
-        cout << " Номер кс: " << station.id << " Имя: " << station.name << " Количество цехов: " << station.col_cex << " Количество цехов в работе: " << station.col_work;
+        cout << " Номер кс: " << station.id << " Имя: " << station.name << " Количество цехов: " << station.col_cex << " Количество цехов в работе: " << station.col_work << "Эффективность: " << station.effic << " %";
     }
     else
     {
@@ -120,9 +120,9 @@ CS AddCS()
     cout << "Введите имя кс ";
     cin >> ws;
     getline(cin, station.name);
-    cout << "Сколько цехов в станции? ";                                                  // сколько цехов в станции?
+    cout << "Сколько цехов в станции? ";                                                 // сколько цехов в станции?
     station.col_cex = ProvInt();
-    cout << "Сколько цехов в работе? ";                                                   // сколько цехов в работе?
+    cout << "Сколько цехов в работе? ";                                                  // сколько цехов в работе?
     station.col_work = ProvInt();
 
     while (station.col_work > station.col_cex)
@@ -130,8 +130,15 @@ CS AddCS()
         cout << "Количество рабочих больше чем всего цехов. Пожалуйста, введите новое значение: ";
         station.col_work = ProvInt();
     }
-    return station;
 
+    cout << "Эффективность цеха";
+    station.effic = ProvInt();
+    while (station.effic < 0 || station.effic > 100) {
+        cout << "Эффективность в %";
+        station.effic = ProvInt();
+    }
+    return station;
+    
 }  
 void editpipe(Pipe& p)                                                                  //редактор трубы
 {
@@ -155,6 +162,12 @@ void editcs(CS& station)                                                        
             cout << "Количество рабочих больше чем всего цехов. Пожалуйста, введите новое значение: \n";
             station.col_work = ProvInt();
         }
+        cout << "Изм эфф";
+        station.effic = ProvInt();
+        while (station.effic < 0 || station.effic > 100) {
+            cout << "Эффективность в %";
+            station.effic = ProvInt();
+        }
 
     }
     else cout << "Добавьте цех";
@@ -163,13 +176,13 @@ void editcs(CS& station)                                                        
 
 void Save( const Pipe& p, const CS& station)                                                          //сохранение в файл
 {
-    ofstream file;
+    ofstream file("savep.txt");
     file.open("savep.txt", ios_base::out);
     if (file.good())
     {
         if (p.l > 1)
         {
-            file << "Pipe: " << endl;
+            file << "Pipe" << endl;
             file << p.id << endl;
             file << p.d << endl;
             file << p.l << endl;
@@ -177,7 +190,7 @@ void Save( const Pipe& p, const CS& station)                                    
         }
         if (station.col_cex > 0)
         {
-            file << "CS: " << endl;
+            file << "CS" << endl;
             file << station.id << endl;
             file << station.name << endl;
             file << station.col_cex << endl;
@@ -222,6 +235,8 @@ void Doload(Pipe& p, CS& station)
          
 
         }
+
+        cout << "хы";
     }
 
 }
