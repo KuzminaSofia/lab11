@@ -177,7 +177,7 @@ void editcs(CS& station)                                                        
 void Save( const Pipe& p, const CS& station)                                                          //сохранение в файл
 {
     ofstream file("savep.txt");
-    file.open("savep.txt", ios_base::out);
+    file.open("savep.txt", );
     if (file.good())
     {
         if (p.l > 1)
@@ -200,7 +200,7 @@ void Save( const Pipe& p, const CS& station)                                    
         cout << "Сохранено\n";
     }
     else {
-        cout << "хуйня переделывай";
+        cout << "переделывай";
     }
 
 }
