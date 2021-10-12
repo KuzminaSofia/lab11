@@ -177,7 +177,7 @@ void editcs(CS& station)                                                        
 void Save( const Pipe& p, const CS& station)                                                          //сохранение в файл
 {
     ofstream file("savep.txt");
-    file.open("savep.txt", );
+    file.open("savep.txt");
     if (file.good())
     {
         if (p.l > 1)
@@ -195,6 +195,7 @@ void Save( const Pipe& p, const CS& station)                                    
             file << station.name << endl;
             file << station.col_cex << endl;
             file << station.col_work << endl;
+            file << station.effic << endl;
         }
         file.close();
         cout << "Сохранено\n";
@@ -226,9 +227,13 @@ void Doload(Pipe& p, CS& station)
             if (text == "CS: ")
             {
                 file >> station.id;
-                file >> station.name;
+                file.ignore(37873, '\n');
+                string(station.name);
+                getline(file, station.name);
+                //file >> station.name;
                 file >> station.col_cex;
                 file >> station.col_work;
+                file >> station.effic;
 
 
             }
@@ -236,7 +241,7 @@ void Doload(Pipe& p, CS& station)
 
         }
 
-        cout << "хы";
+        cout << "Загружено";
     }
 
 }
