@@ -81,7 +81,7 @@ void PrinteCS( const CS& station)
 {
     if (station.col_cex > 0)
     {
-        cout << " Номер кс: " << station.id << " Имя: " << station.name << " Количество цехов: " << station.col_cex << " Количество цехов в работе: " << station.col_work << "Эффективность: " << station.effic << " %";
+        cout << " Номер кс: " << station.id << " Имя: " << station.name << " Количество цехов: " << station.col_cex << " Количество цехов в работе: " << station.col_work << " Эффективность: " << station.effic << " %";
     }
     else
     {
@@ -122,12 +122,16 @@ CS AddCS()
     getline(cin, station.name);
     cout << "Сколько цехов в станции? ";                                                 // сколько цехов в станции?
     station.col_cex = ProvInt();
+    while (station.col_cex < 1) {
+        cout << "Введите число больше 0";
+        station.col_cex = ProvInt();
+    }
     cout << "Сколько цехов в работе? ";                                                  // сколько цехов в работе?
     station.col_work = ProvInt();
 
-    while (station.col_work > station.col_cex)
+    while (station.col_work > station.col_cex || station.col_cex < 0)
     {
-        cout << "Количество рабочих больше чем всего цехов. Пожалуйста, введите новое значение: ";
+        cout << "Количество рабочих больше чем всего цехов или вы ввели отрицательное значение. Пожалуйста, введите новое значение: ";
         station.col_work = ProvInt();
     }
 
@@ -176,7 +180,7 @@ void editcs(CS& station)                                                        
 
 void Save( const Pipe& p, const CS& station)                                                          //сохранение в файл
 {
-    ofstream file("savep.txt");
+    ofstream file;
     file.open("savep.txt");
     if (file.good())
     {
@@ -217,14 +221,14 @@ void Doload(Pipe& p, CS& station)
             string text;
             file >> text;
             cout << text << endl;
-            if (text == "Pipe: ")
+            if (text == "Pipe")
             {
                 file >> p.id;
                 file >> p.d;
                 file >> p.l;
                 file >> p.r;
             }
-            if (text == "CS: ")
+            if (text == "CS")
             {
                 file >> station.id;
                 file.ignore(37873, '\n');
@@ -268,44 +272,56 @@ int main()
         switch (m)
         {
         case 1:
-
+        {
             return 0;
+        }
 
         case 2:
-
+        {
             system("cls");
             p = AddPipe();
             break;
+        }
 
         case 3:
+        {
             system("cls");
             station = AddCS();
             break;
+        }
 
         case 4:
-
+        {
             system("cls");
             PrintePipe(p);
             PrinteCS(station);
             break;
+        }
 
         case 5:
-            system("cls");
+        {   system("cls");
             editpipe(p);
             break;
+        }
 
         case 6:
+        {
             system("cls");
             editcs(station);
             break;
+        }
         case 7:
+        {
             system("cls");
             Save(p, station);
+        }
             break;
         case 8:
+        {
             system("cls");
             Doload(p, station);
             break;
+        }
         default:
             cout << "Введите пункт из меню";
             break;
