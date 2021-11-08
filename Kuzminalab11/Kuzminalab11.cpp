@@ -5,6 +5,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
+#include <unordered_map>
 
 using namespace std;
 struct Pipe
@@ -113,6 +115,30 @@ Pipe AddPipe()
    // cin >> p.r;
     return p;
 }
+
+void AddPipeVector(Pipe& p, int& pipe_id, std::unordered_map<int, Pipe>& Pipeline)
+{
+    p = AddPipe();
+    pipe_id++;
+    p.id = pipe_id;
+    Pipeline.insert({ pipe_id, p });
+}
+
+void PrintPipeline(std::unordered_map<int, Pipe>::iterator& pipe_iter, std::unordered_map<int, Pipe>& Pipeline)
+{
+    cout << "Pipeline:\n ";
+    pipe_iter = Pipeline.begin();
+    for (int i = 0; pipe_iter != Pipeline.end(); pipe_iter++)
+    {
+        cout << " id: " << pipe_iter->second.id << " Диаметр: " << pipe_iter->second.d << " Длина: " << pipe_iter->second.l << " Ремонт: " << pipe_iter->second.r << endl;
+
+    }
+
+
+
+}
+
+
 CS AddCS()
 {
     CS station;
@@ -144,6 +170,26 @@ CS AddCS()
     return station;
     
 }  
+
+void AddCSVector(CS& station, int& cs_id, std::unordered_map<int, CS>& CSline)
+{
+    station = AddCS();
+    cs_id++;
+    station.id = cs_id;
+    CSline.insert({ cs_id, station });
+}
+
+void PrintCSline(std::unordered_map<int, CS>::iterator& cs_iter, std::unordered_map<int, CS>& CSline)
+{
+    cout << "CSline:\n ";
+    cs_iter = CSline.begin();
+    for (int i = 0; cs_iter != CSline.end(); cs_iter++)
+    {
+        cout << " Номер кс: " << cs_iter->second.id << " Имя: " << cs_iter->second.name << " Количество цехов: " << cs_iter->second.col_cex << " Количество цехов в работе: " << cs_iter->second.col_work << endl;
+
+    }
+}
+
 void editpipe(Pipe& p)                                                                  //редактор трубы
 {
     if (p.l > 1)                                                                        //существует
@@ -262,6 +308,15 @@ int main()
     Pipe p = {};
     CS station = {};
 
+    unordered_map <int, Pipe> Pipeline = {};
+    unordered_map <int, CS> CSline = {};
+
+    unordered_map <int, Pipe> :: iterator pipe_iter = Pipeline.begin();
+    unordered_map <int, CS> ::iterator cs_iter = CSline.begin();
+
+    int pipe_id = 0;
+    int cs_id = 0;
+
     {
         setlocale(0, "");                                                              //русский язык  
     }
@@ -279,22 +334,28 @@ int main()
         case 2:
         {
             system("cls");
-            p = AddPipe();
+            AddPipeVector(p, pipe_id, Pipeline);
+
+           // p = AddPipe();
             break;
         }
 
         case 3:
         {
             system("cls");
-            station = AddCS();
+            AddCSVector(station, cs_id, CSline);
+
+           // station = AddCS();
             break;
         }
 
         case 4:
         {
             system("cls");
-            PrintePipe(p);
-            PrinteCS(station);
+            PrintPipeline(pipe_iter, Pipeline);
+            PrintCSline(cs_iter, CSline);
+            //PrintePipe(p);
+            //PrinteCS(station);
             break;
         }
 
