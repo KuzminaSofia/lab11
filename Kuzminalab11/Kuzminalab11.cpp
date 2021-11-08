@@ -296,6 +296,49 @@ void Doload(Pipe& p, CS& station)
 
 }
 
+void DeletePipe(std::unordered_map<int, Pipe>::iterator& pipe_iter, std::unordered_map<int, Pipe>& Pipeline)
+{
+    cout << "Какую трубу Вы хотите удалить? (id)" << endl;
+    vector <int> idv;
+    int id;
+    id = ProvInt();
+    while (id != 0)
+    {
+        idv.push_back(id);
+        cout << "Нажмите 0 чтобы удалить или добавьте id";
+        id = ProvInt();
+    }
+    pipe_iter = Pipeline.begin();
+    for (int i = 0; i < idv.size(); i++)
+    {
+        pipe_iter = Pipeline.find(idv[i]);
+        Pipeline.erase(pipe_iter);
+    }
+    idv.clear();
+    cout << "Удалено" << endl;
+}
+
+void DeleteCS(std::unordered_map<int, CS>::iterator& cs_iter, std::unordered_map<int, CS>& CSline)
+{
+    cout << "Какую станцию Вы хотите удалить? (id)" << endl;
+    vector <int> csv;
+    int id;
+    id = ProvInt();
+    while (id != 0)
+    {
+        csv.push_back(id);
+        cout << "Нажмите 0 чтобы удалить или добавьте id";
+        id = ProvInt();
+    }
+    cs_iter = CSline.begin();
+    for (int i = 0; i < csv.size(); i++)
+    {
+        cs_iter = CSline.find(csv[i]);
+        CSline.erase(cs_iter);
+    }
+    csv.clear();
+    cout << "Удалено" << endl;
+}
 
 
 
@@ -322,7 +365,7 @@ int main()
     }
 
     for (;;) {
-        cout << "\n 1. Выход\n 2. Добавить трубу\n 3. Добавить кс\n 4. Показать все объекты\n 5. Редактировать трубу\n 6. Редактировать кс\n 7. Сохранить\n 8. Загрузить\n";
+        cout << "\n 1. Выход\n 2. Добавить трубу\n 3. Добавить кс\n 4. Показать все объекты\n 5. Редактировать трубу\n 6. Редактировать кс\n 7. Сохранить\n 8. Загрузить\n 9. Удалить трубу\n 10. Удалить кс\n";
         m = ProvInt();
         switch (m)
         {
@@ -375,12 +418,22 @@ int main()
         {
             system("cls");
             Save(p, station);
-        }
             break;
+        }
         case 8:
         {
             system("cls");
             Doload(p, station);
+            break;
+        }
+        case 9:
+        {
+            DeletePipe(pipe_iter, Pipeline);
+            break;
+        }
+        case 10:
+        {
+            DeleteCS(cs_iter, CSline);
             break;
         }
         default:
