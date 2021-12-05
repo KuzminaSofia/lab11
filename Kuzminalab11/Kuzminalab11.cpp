@@ -41,7 +41,84 @@ T ProvNumber(T min, T max)   //proverka
 //    }
 //}
 
+template <typename T>
+int PoiskID(const T& line, int id)
+{
+    if (line.find(id) != line.end())
+        return id;
+    return 0;
+}
 
+int redactPipe(unordered_map<int, Pipe>& Pipeline)
+{
+    cout << "Введите ID труб: " << endl;
+    for (;;)
+    {
+        int id = ProvNumber(0, INT_MAX);
+        if (PoiskID(Pipeline, id) != 0)
+        {
+            Pipeline[id].redact();
+            cout << "Изменено" << endl;
+            return id;
+        }
+        else cout << "Нет трубы с таким ID" << endl;
+    }
+}
+
+int redactSatation(unordered_map<int, CS>& CSline)
+{
+    cout << "Введите ID станции: " << endl;
+    for (;;)
+    {
+        int id = ProvNumber(0, INT_MAX);
+        if (PoiskID(CSline, id) != 0)
+        {
+            CSline[id].redact();
+            cout << "Изменено" << endl;
+            return id;
+        }
+        else cout << "Нет станции с таким ID" << endl;
+    }
+}
+
+template <typename T>
+void DELETE1(T& line, int id)
+{
+    if (line.find(id) != line.end())
+        line.erase(id);
+}
+
+void DELETEPipe(unordered_map<int, Pipe>& Pipeline)
+{
+    cout << "Введите ID трубы" << endl;
+    for (;;)
+    {
+        int id = ProvNumber(0, INT_MAX);
+        if (PoiskID(Pipeline, id) != 0)
+        {
+            DELETE1(Pipeline, id);
+            cout << "Труба удалена";
+            return;
+        }
+        else cout << "Трубы с таким ID нет" << endl;
+    }
+}
+
+void DELETECS(unordered_map<int, CS>& CSline)
+{
+    cout << "Введите ID станции" << endl;
+    for (;;)
+    {
+        int id = ProvNumber(0, INT_MAX);
+        if (PoiskID(CSline, id) != 0)
+        {
+            DELETE1(CSline, id);
+            cout << "Станция удалена";
+            return;
+        }
+        else cout << "Станции с таким ID нет" << endl;
+    }
+}
 
 void PrintePipe( const unordered_map<int, Pipe>& PipeLine)
 {
@@ -55,84 +132,6 @@ void PrinteCS( const unordered_map<int, CS>& CSline)
         cout << station.second;
 }
 
-
-//template <typename T>
-//using Filter = bool(*)(const CS& station, T param);
-//bool CheckByName(const CS& station, string param)
-//{
-//    return station.name == param;
-//}
-
-//template <typename T>
-//vector <int> FindCSByFilter(const vector<CS>& CSline, Filter <T> filter, T param)
-//{
-//    vector <int> result;
-//    int i = 0;
-//    for (auto& station : CSline)
-//    {
-//        if (filter(station, param))
-//            result.push_back(i);
-//        i++;
-//    }
-//    return result;
-//}
-//
-//void editpipe(Pipe& p)                                                                  //редактор трубы
-//{
-//    if (p.l > 1)                                                                        //существует
-//    {
-//        
-//        cout << "Если труба в работе нажмите - 0, если в ремонте - 1 \n";               //не работает ничего кроме 1 и 0, вылетает прога
-//        p.r = ProvNumber(0,1);
-//    }
-//    else cout << "Добавьте трубу";
-//}
-//
-//void editcs(CS& station)                                                                 //редактор компрессорной станции
-//{
-//    if (station.col_cex > 0)
-//    {
-//        cout << "Сколько цехов в работе сейчас?";
-//        station.col_work = ProvNumber(0,station.col_cex);
-//        cout << "Изм эфф";
-//        station.effic = ProvNumber(0.0,100.0);
-//
-//    }
-//    else cout << "Добавьте цех";
-//
-//}
-
-//void Save( const Pipe& p, const CS& station)                                                          //сохранение в файл
-//{
-//    ofstream file;
-//    file.open("savep.txt");
-//    if (file.good())
-//    {
-//        if (p.l > 1)
-//        {
-//            file << "Pipe" << endl;
-//            file << p.id << endl;
-//            file << p.d << endl;
-//            file << p.l << endl;
-//            file << p.r << endl;
-//        }
-//        if (station.col_cex > 0)
-//        {
-//            file << "CS" << endl;
-//            file << station.id << endl;
-//            file << station.name << endl;
-//            file << station.col_cex << endl;
-//            file << station.col_work << endl;
-//            file << station.effic << endl;
-//        }
-//        file.close();
-//        cout << "Сохранено\n";
-//    }
-//    else {
-//        cout << "переделывай";
-//    }
-//
-//}
 
 void Savepipe(const unordered_map <int, Pipe>& Pipeline, ofstream& fout)
 {
@@ -148,52 +147,27 @@ void Savecs(const unordered_map <int, CS>& CSline, ofstream& fout)
 
 void Load(unordered_map<int, Pipe>& Pipeline, unordered_map<int, CS>& CSline, ifstream& fin)
 {
+    int sizepipe, sizecs, maxidpipe, maxidcs;
+    fin >> sizepipe;
+    fin >> maxidpipe;
+    fin >> sizecs;
+    fin >> maxidcs;
+    for (int i = 1; i < sizepipe; i++)
+    {
+        Pipe p;
+        fin >> p;
+        Pipeline.insert({ p.getId(), p });
+    }
+    for (int i = 1; i < sizecs; i++)
+    {
+        CS station;
+        fin >> station;
+        CSline.insert({ station.getId(), station });
 
+    }
+    Pipe::setMaxID(maxidpipe);
+    CS::setMaxID(maxidcs);
 }
-
-
-
-//void Doload(Pipe& p, CS& station)
-//{
-//    ifstream file;
-//    file.open("savep.txt");
-//    if (file.good())
-//    {
-//        while (!file.eof())
-//        {
-//            string text;
-//            file >> text;
-//            cout << text << endl;
-//            if (text == "Pipe")
-//            {
-//                file >> p.id;
-//                file >> p.d;
-//                file >> p.l;
-//                file >> p.r;
-//            }
-//            if (text == "CS")
-//            {
-//                file >> station.id;
-//                file.ignore(37873, '\n');
-//                //string(station.name);
-//                getline(file, station.name);
-//                //file >> station.name;
-//                file >> station.col_cex;
-//                file >> station.col_work;
-//                file >> station.effic;
-//
-//
-//            }
-//         
-//
-//        }
-//
-//        cout << "Загружено";
-//    }
-//
-//}
-
-
 
 int main()
 {
@@ -216,8 +190,10 @@ int main()
             << "\n 7. Сохранить"
             << "\n 8. Загрузить"
             << "\n 9. Поиск кс по имени "
-            << "\n 10. Удалить кс\n";
-        m = ProvNumber(1,10);
+            << "\n 10. Удалить трубу"
+            << "\n 11. Удалить кс\n";
+        
+        m = ProvNumber(1,11);
         switch (m)
         {
         case 1:
@@ -262,14 +238,14 @@ int main()
 
         case 5:
         {   system("cls");
-            //editpipe(p);
+            redactPipe(Pipeline);
             break;
         }
 
         case 6:
         {
             system("cls");
-           // editcs(station);
+           redactSatation(CSline);
             break;
         }
         case 7:
@@ -280,55 +256,53 @@ int main()
             cin.ignore(23456, '\n');
             getline(cin, name);
             ofstream fout;
-            fout.open(name, ios::out)
+            fout.open(name, ios::out);
                 if (fout.is_open())
                 {
                     if (Pipeline.size() != 0)
                         fout << Pipeline.size() << endl << Pipe::getMaxID() << endl;
                     else fout << 0 << endl << 0 << endl;
+                    if (CSline.size() != 0)
+                        fout << CSline.size() << endl << CS::getMaxID() << endl;
+                    else fout << 0 << endl << 0 << endl;
+
+                    if (Pipeline.size() != 0)
+                        Savepipe(Pipeline, fout);
+                    if (CSline.size() != 0)
+                        Savecs(CSline, fout);
+                    cout << "Сохранено";
                 }
-
-
-
+                fout.close();
 
             break;
         }
         case 8:
         {
-           /* system("cls");
-            ifstream file;
-            file.open("savep.txt", ios::in);
-            if (file.is_open())
-            {
-                int count1;
-                file >> count1;
-                while (count1--)
-                    Pipeline.push_back(Doloadp(file));
-
-                int count2;
-                file >> count2;
-                while (count2--)
-                    CSline.push_back(Doloadstation(file));
-                file.close();
-            }*/
-
-            //Doload(p, station);
+            string name;
+            cout << "Введите имя файла: " << endl;
+            cin.ignore(23456, '\n');
+            getline(cin, name);
+            ifstream fin;
+            fin.open(name, ios::in);
+            if (fin.is_open())
+                Load(Pipeline, CSline, fin);
+            cout << "Загружено";
+            fin.close();
             break;
         }
         case 9:
         {
-            /*string name;
-            cout << "enter name" << endl;
-            cin >> name;
-            for (int i : FindCSByFilter<string>(CSline, CheckByName, name))
-                cout << CSline[i]<< endl;*/
-
-            //DeletePipe(pipe_iter, Pipeline);
+         
             break;
         }
         case 10:
         {
-            //DeleteCS(cs_iter, CSline);
+            DELETEPipe(Pipeline);
+            break;
+        }
+        case 11:
+        {
+            DELETECS(CSline);
             break;
         }
         default:

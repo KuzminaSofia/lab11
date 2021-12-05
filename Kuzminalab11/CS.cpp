@@ -68,6 +68,12 @@ std::ifstream& operator>>(std::ifstream& fin, CS& station)
 }
 ostream& operator << (ostream& out, const CS& station)
 {
-        cout << " Номер кс: " << station.id << " Имя: " << station.name << " Количество цехов: " << station.col_cex << " Количество цехов в работе: " << station.col_work << " Эффективность: " << station.effic << " %";
+        cout << " Номер кс: " << station.id << " Имя: " << station.name << " Количество цехов: " << station.col_cex << " Количество цехов в работе: " << station.col_work << " Эффективность: " << station.effic << " %" << endl;
     return out;
+}
+
+void CS::redact()
+{
+    cout << "Сколько цехов в работе на станции сейчас?" << endl;
+    col_work = ProvNumber(0, col_cex);
 }

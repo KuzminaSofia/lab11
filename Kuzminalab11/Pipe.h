@@ -18,6 +18,7 @@ public:
     int getD() { return d; }
     int getL() { return l; }
     bool getR() { return r; }
+    void redact();
 
     friend std::ostream& operator <<(std::ostream& out, const Pipe& p);
     friend std::istream& operator >>(std::istream& in, Pipe& p);

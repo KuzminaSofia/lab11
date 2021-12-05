@@ -68,4 +68,8 @@ ostream& operator << (ostream& out, const Pipe& p)
     return out;
 }
 
+void Pipe::redact()
+{
+    r = !r;
+}
 

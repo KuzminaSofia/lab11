@@ -21,6 +21,7 @@ public:
     int getWork() { return col_work; }
     double getEffic() { return effic; }
     std::string getName() { return name; }
+    void redact();
 
     friend std::ostream& operator <<(std::ostream& out, const CS& station);
     friend std::istream& operator >>(std::istream& in, CS& station);
