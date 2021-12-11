@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Pipe.h"
 #include <ostream>
+#include <string>
 
 using namespace std;
 int Pipe::MaxID = 0;
@@ -11,6 +12,7 @@ Pipe::Pipe()
 	d = 0;
 	l = 0;
 	r = 0;
+    name = "";
 }
 
 template <typename T>
@@ -29,6 +31,9 @@ T ProvNumber(T min, T max)   //proverka
 
 istream& operator >> (istream& in, Pipe& p)
 {
+    cout << "Введите имя трубы: ";
+    cin >> ws;
+    getline(cin, p.name);
     cout << "Введите диаметр: ";
     p.d = ProvNumber(400, 2000);
     cout << "Введите длину: ";
@@ -42,6 +47,7 @@ std::ofstream& operator<<(std::ofstream& fout, const Pipe& p)
     if (fout.is_open())
     {
         fout << p.id << endl
+            << p.name << endl
             << p.d << endl
             << p.l << endl
             << p.r << endl;
@@ -54,6 +60,8 @@ std::ifstream& operator>>(std::ifstream& fin, Pipe& p)
     if (fin.is_open())
     {
         fin >> p.id;
+        fin >> ws;
+        getline(fin, p.name);
         fin >> p.d;
         fin >> p.l;
         fin >> p.r;
@@ -63,7 +71,7 @@ std::ifstream& operator>>(std::ifstream& fin, Pipe& p)
 
 ostream& operator << (ostream& out, const Pipe& p)
 {
-        cout << " Труба под номером: " << p.id << "  Диаметр: " << p.d << " мм " << " Длина: " << p.l << " км\n";
+        cout << " Труба под номером: " << p.id << " Имя трубы " << p.name << "  Диаметр: " << p.d << " мм " << " Длина: " << p.l << " км\n";
         cout << " Труба в ремонте: " << p.r << endl;
     return out;
 }

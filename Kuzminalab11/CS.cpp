@@ -23,7 +23,7 @@ T ProvNumber(T min, T max)   //proverka
     {
         cin.clear();
         cin.ignore(20000, '\n');
-        cout << "¬ведите число от " << min << "до " << max;
+        cout << "¬ведите число от " << min << " до " << max << " ";
     }
     return num;
 
@@ -63,6 +63,7 @@ std::ifstream& operator>>(std::ifstream& fin, CS& station)
         getline(fin, station.name);
         fin >> station.col_cex;
         fin >> station.col_work;
+        fin >> station.effic;
 }
     return fin;
 }

@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include "Pipe.h"
 #include "CS.h"
+#include <unordered_set>
 
 
 
@@ -30,16 +31,6 @@ T ProvNumber(T min, T max)   //proverka
           
 }
 
-//string ProvStr()
-//{
-//    while (1)
-//    {
-//        cin >> ws;
-//        string str;
-//        getline(cin, str);
-//        return str;
-//    }
-//}
 
 template <typename T>
 int PoiskID(const T& line, int id)
@@ -47,6 +38,39 @@ int PoiskID(const T& line, int id)
     if (line.find(id) != line.end())
         return id;
     return 0;
+}
+
+vector <int> PoiskRemont(unordered_map<int, Pipe>& Pipeline, bool& r)
+{
+    vector <int> line;
+    for (auto& p : Pipeline)
+    {
+        if (p.second.getR() == r)
+            line.push_back(p.first);
+    }
+    return line;
+}
+
+
+template <typename T>
+vector<int> PoiskName(T& line, string& name)
+{
+    vector<int> res;
+    for (auto& id : line) {
+        if (id.second.getName() == name)
+            res.push_back(id.first);
+    }
+    return res;
+}
+
+vector<int> PoiskProc(unordered_map<int, CS>& CSs, double& proc)
+{
+    vector<int> res;
+    for (auto& station : CSs) {
+        if (round((((double(station.second.getCex()) - double(station.second.getWork())) / double(station.second.getCex()) * 100) >= proc)))
+            res.push_back(station.first);
+    }
+    return res;
 }
 
 int redactPipe(unordered_map<int, Pipe>& Pipeline)
@@ -65,7 +89,7 @@ int redactPipe(unordered_map<int, Pipe>& Pipeline)
     }
 }
 
-int redactSatation(unordered_map<int, CS>& CSline)
+int redactCS(unordered_map<int, CS>& CSline)
 {
     cout << "Введите ID станции: " << endl;
     for (;;)
@@ -82,7 +106,7 @@ int redactSatation(unordered_map<int, CS>& CSline)
 }
 
 template <typename T>
-void DELETE1(T& line, int id)
+void DELETE(T& line, int id)
 {
     if (line.find(id) != line.end())
         line.erase(id);
@@ -93,10 +117,10 @@ void DELETEPipe(unordered_map<int, Pipe>& Pipeline)
     cout << "Введите ID трубы" << endl;
     for (;;)
     {
-        int id = ProvNumber(0, INT_MAX);
+        int id = ProvNumber(0, Pipe::getMaxID());
         if (PoiskID(Pipeline, id) != 0)
         {
-            DELETE1(Pipeline, id);
+            DELETE(Pipeline, id);
             cout << "Труба удалена";
             return;
         }
@@ -109,10 +133,10 @@ void DELETECS(unordered_map<int, CS>& CSline)
     cout << "Введите ID станции" << endl;
     for (;;)
     {
-        int id = ProvNumber(0, INT_MAX);
+        int id = ProvNumber(0, CS::getMaxID());
         if (PoiskID(CSline, id) != 0)
         {
-            DELETE1(CSline, id);
+            DELETE(CSline, id);
             cout << "Станция удалена";
             return;
         }
@@ -132,6 +156,420 @@ void PrinteCS( const unordered_map<int, CS>& CSline)
         cout << station.second;
 }
 
+void redactPipeline(unordered_map<int, Pipe>& PipeLine)
+{
+    if (PipeLine.size() != 0)
+    {
+        cout << "Редактирование: " << endl << " 1 - одну трубу " << endl << " 2 - несколько труб ";
+        switch (ProvNumber(1, 2))
+        {
+        case 1:
+        {
+            cout << " 1 - изменить статус ремонта, 2 - удалить ";
+            if (ProvNumber(1,2) == 1)
+            redactPipe(PipeLine);
+            else
+            {
+                cout << "Введите ID трубы: ";
+                int id = ProvNumber(0, Pipe::getMaxID());
+                DELETE(PipeLine, id);
+            }
+
+            break;
+        }
+        case 2:
+        {
+            cout << "1. Поиск труб по имени " << endl
+                 << "2. Поиск труб по статусу ремонта" << endl
+                 << "3. Выход" << endl;
+        switch (ProvNumber(1, 3))
+        {
+        case 1: //поиск по имени
+        {
+            cout << "Введите имя труб " << endl;
+            string name;
+            cin.ignore(12345, '\n');
+            getline(cin, name);
+            vector <int> namepipe = PoiskName(PipeLine, name);
+            for (int i : namepipe)
+                cout << PipeLine[i];
+
+            cout << "1. Изменить статус ремонта труб" << endl
+                << "2. Удалить трубы " << endl
+                << "3. ВЫход " << endl;
+
+            switch (ProvNumber(1, 3))
+            {
+            case 1:
+            {
+                cout << " 1 - изменить все найденные трубы, 2 - изменить по выбору, 0 - назад ";
+                if (ProvNumber(1, 2) == 1)
+                {
+                    if (namepipe.size() != 0)
+
+                    {
+                        for (auto& id : namepipe)
+                            PipeLine[id].redact();
+                        cout << "Изменено" << endl;
+                    }
+                    else cout << "Нет труб" << endl;
+                    
+                }
+                else {
+                    unordered_set<int> res;
+                    cout << "Введите ID труб для редактирования, введите 0 чтобы продолжить ";
+                    int id = ProvNumber(0, Pipe::getMaxID());
+                    while (id) 
+                    {
+                        res.insert(id);
+                        id = ProvNumber(0, Pipe::getMaxID());
+                    }
+                    for (auto& pid : namepipe)
+                        if (res.count(pid) > 0)
+                            PipeLine[pid].redact();
+                }
+                PrintePipe(PipeLine);
+                break;
+            }
+            case 2:
+            {
+                cout << " 1 - удалить все найденные трубы, 2 - удалить по выбору";
+                if (ProvNumber(1, 2) == 1)
+                {
+                    if (namepipe.size() != 0)
+
+                    {
+                        for (auto& id : namepipe)
+                            DELETE(PipeLine, id);
+                        cout << "Удалено" << endl;
+                    }
+                    else cout << "Нет труб" << endl;
+                    
+                }
+                else {
+                    unordered_set<int> res;
+                    cout << "Введите ID труб для удаления, введите 0 чтобы продолжить ";
+                    int id = ProvNumber(0, Pipe::getMaxID());
+                    while (id)
+                    {
+                        res.insert(id);
+                        id = ProvNumber(0, Pipe::getMaxID());
+                    }
+                    for (auto& pid : namepipe)
+                        if (res.count(pid) > 0)
+                            DELETE(PipeLine, pid);
+                }
+                PrintePipe(PipeLine);
+                break;
+            }
+            case 0:
+                return;
+            }
+            break;
+        }
+        case 2: // поиск по статусу ремонта 
+        {
+            cout << "0 - выбрать все рабочие трубы, 1 - выбрать все трубы в ремонте, 2 - назад " << endl;
+            bool remont = ProvNumber(0, 2);
+            vector <int> rempipe = PoiskRemont(PipeLine, remont);
+            for (int i : rempipe)
+                cout << PipeLine[i];
+
+            cout << "1. Изменить статус ремонта труб" << endl
+                << "2. Удалить трубы " << endl
+                << "3. Выход " << endl;
+
+            switch (ProvNumber(1, 3))
+            {
+            case 1: //изменить статус
+            {
+                cout << " 1 - изменить все найденные трубы, 2 - изменить по выбору, 0 - назад ";
+                if (ProvNumber(1, 2) == 1)
+                {
+                    if (rempipe.size() != 0)
+
+                    {
+                        for (auto& id : rempipe)
+                            PipeLine[id].redact();
+                        cout << "Изменено" << endl;
+                    }
+                    else cout << "Нет труб" << endl;
+
+                }
+                else {
+                    unordered_set<int> res;
+                    cout << "Введите ID труб для редактирования, введите 0 чтобы продолжить ";
+                    int id = ProvNumber(0, Pipe::getMaxID());
+                    while (id)
+                    {
+                        res.insert(id);
+                        id = ProvNumber(0, Pipe::getMaxID());
+                    }
+                    for (auto& pid : rempipe)
+                        if (res.count(pid) > 0)
+                            PipeLine[pid].redact();
+                }
+                PrintePipe(PipeLine);
+                break;
+            }
+            case 2:
+            {
+                cout << " 1 - удалить все найденные трубы, 2 - удалить по выбору";
+                if (ProvNumber(1, 2) == 1)
+                {
+                    if (rempipe.size() != 0)
+
+                    {
+                        for (auto& id : rempipe)
+                            DELETE(PipeLine, id);
+                        cout << "Удалено" << endl;
+                    }
+                    else cout << "Нет труб" << endl;
+
+                }
+                else {
+                    unordered_set<int> res;
+                    cout << "Введите ID труб для удаления, введите 0 чтобы продолжить ";
+                    int id = ProvNumber(0, Pipe::getMaxID());
+                    while (id)
+                    {
+                        res.insert(id);
+                        id = ProvNumber(0, Pipe::getMaxID());
+                    }
+                    for (auto& pid : rempipe)
+                        if (res.count(pid) > 0)
+                            DELETE(PipeLine, pid);
+                }
+                PrintePipe(PipeLine);
+                break;
+            }
+            case 3:
+                return;
+            }
+            break;
+        }
+        case 3:
+            return;
+        }
+        }
+        }
+        
+    }
+    else cout << "Нет труб" << endl;
+}
+
+void redactCSline(unordered_map<int, CS>& CSline)
+{
+    if (CSline.size() != 0)
+    {
+        cout << "Редактирование: " << endl << " 1 - одну кс " << endl << " 2 - несколько кс ";
+        switch (ProvNumber(1, 2))
+        {
+        case 1:
+        {
+            cout << " 1 - изменить количество работающих цехов, 2 - удалить кс ";
+            if (ProvNumber(1, 2) == 1)
+                redactCS(CSline);
+            else
+            {
+                cout << "Введите ID кс: ";
+                int id = ProvNumber(0, CS::getMaxID());
+                DELETE(CSline, id);
+            }
+
+            break;
+        }
+        case 2:
+        {
+            cout << "1. Поиск кс по имени " << endl
+                << "2. Поиск кс по % незадействованных цехов " << endl
+                << "3. Выход" << endl;
+            switch (ProvNumber(1, 3))
+            {
+            case 1: //поиск по имени
+            {
+                cout << "Введите имя кс" << endl;
+                string name;
+                cin.ignore(12345, '\n');
+                getline(cin, name);
+                vector <int> namecs = PoiskName(CSline, name);
+                for (int i : namecs)
+                    cout << CSline[i];
+                if (namecs.size() == 0)
+                {
+                    cout << "Нет таких кс" << endl;
+                }
+                else {
+
+                    cout << "1. Изменить количество работающих цехов " << endl
+                        << "2. Удалить кс " << endl
+                        << "3. Выход " << endl;
+
+                    switch (ProvNumber(1, 3))
+                    {
+                    case 1:
+                    {
+                        cout << " 1 - изменить все найденные кс, 2 - изменить по выбору, 0 - назад ";
+                        if (ProvNumber(1, 2) == 1)
+                        {
+                            if (namecs.size() != 0)
+
+                            {
+                                for (auto& id : namecs)
+                                    CSline[id].redact();
+                                cout << "Изменено" << endl;
+                            }
+                            else cout << "Нет кс" << endl;
+
+                        }
+                        else {
+                            unordered_set<int> res;
+                            cout << "Введите ID кс для редактирования, введите 0 чтобы продолжить ";
+                            int id = ProvNumber(0, CS::getMaxID());
+                            while (id)
+                            {
+                                res.insert(id);
+                                id = ProvNumber(0, CS::getMaxID());
+                            }
+                            for (auto& cid : namecs)
+                                if (res.count(cid) > 0)
+                                    CSline[cid].redact();
+                        }
+                        PrinteCS(CSline);
+                        break;
+                    }
+                    case 2:
+                    {
+                        cout << " 1 - удалить все найденные кс, 2 - удалить по выбору";
+                        if (ProvNumber(1, 2) == 1)
+                        {
+                            if (namecs.size() != 0)
+
+                            {
+                                for (auto& id : namecs)
+                                    DELETE(CSline, id);
+                                cout << "Удалено" << endl;
+                            }
+                            else cout << "Нет кс" << endl;
+
+                        }
+                        else {
+                            unordered_set<int> res;
+                            cout << "Введите ID кс для удаления, введите 0 чтобы продолжить ";
+                            int id = ProvNumber(0, CS::getMaxID());
+                            while (id)
+                            {
+                                res.insert(id);
+                                id = ProvNumber(0, CS::getMaxID());
+                            }
+                            for (auto& cid : namecs)
+                                if (res.count(cid) > 0)
+                                    DELETE(CSline, cid);
+                        }
+                        PrinteCS(CSline);
+                        break;
+                    }
+                    case 0:
+                        return;
+                    }
+                    break;
+                }
+            }
+            case 2: // поиск %
+            {
+                cout << "Введите % незадействованых цехов " << endl;
+                double proc = ProvNumber(0.0, 100.0);
+                vector <int> proccs = PoiskProc(CSline, proc);
+                for (int i : proccs)
+                    cout << CSline[i];
+                if (proccs.size() == 0)
+                {
+                    cout << "Нет таких кс" << endl;
+                }
+                else {
+                    cout << "1. Изменить количество работающих станций " << endl
+                        << "2. Удалить кс " << endl
+                        << "3. Выход " << endl;
+
+                    switch (ProvNumber(1, 3))
+                    {
+                    case 1:
+                    {
+                        cout << " 1 - изменить все найденные кс, 2 - изменить по выбору, ";
+                        if (ProvNumber(1, 2) == 1)
+                        {
+                            if (proccs.size() != 0)
+
+                            {
+                                for (auto& id : proccs)
+                                    CSline[id].redact();
+                                cout << "Изменено" << endl;
+                            }
+                            else cout << "Нет кс" << endl;
+
+                        }
+                        else {
+                            unordered_set<int> res;
+                            cout << "Введите ID кс для редактирования, введите 0 чтобы продолжить ";
+                            int id = ProvNumber(0, CS::getMaxID());
+                            while (id)
+                            {
+                                res.insert(id);
+                                id = ProvNumber(0, CS::getMaxID());
+                            }
+                            for (auto& cid : proccs)
+                                if (res.count(cid) > 0)
+                                    CSline[cid].redact();
+                        }
+                        PrinteCS(CSline);
+                        break;
+                    }
+                    case 2:
+                    {
+                        cout << " 1 - удалить все найденные кс, 2 - удалить по выбору";
+                        if (ProvNumber(1, 2) == 1)
+                        {
+                            if (proccs.size() != 0)
+
+                            {
+                                for (auto& id : proccs)
+                                    DELETE(CSline, id);
+                                cout << "Удалено" << endl;
+                            }
+                            else cout << "Нет кс" << endl;
+
+                        }
+                        else {
+                            unordered_set<int> res;
+                            cout << "Введите ID кс для удаления, введите 0 чтобы продолжить ";
+                            int id = ProvNumber(0, CS::getMaxID());
+                            while (id)
+                            {
+                                res.insert(id);
+                                id = ProvNumber(0, CS::getMaxID());
+                            }
+                            for (auto& cid : proccs)
+                                if (res.count(cid) > 0)
+                                    DELETE(CSline, cid);
+                        }
+                        PrinteCS(CSline);
+                        break;
+                    }
+                    case 3:
+                        return;
+                    }
+                    break;
+                }
+            }
+            case 3:
+                return;
+            }
+        }
+        }
+
+    }
+    else cout << "Нет труб" << endl;
+}
 
 void Savepipe(const unordered_map <int, Pipe>& Pipeline, ofstream& fout)
 {
@@ -152,13 +590,13 @@ void Load(unordered_map<int, Pipe>& Pipeline, unordered_map<int, CS>& CSline, if
     fin >> maxidpipe;
     fin >> sizecs;
     fin >> maxidcs;
-    for (int i = 1; i < sizepipe; i++)
+    for (int i = 0; i < sizepipe; i++)
     {
         Pipe p;
         fin >> p;
         Pipeline.insert({ p.getId(), p });
     }
-    for (int i = 1; i < sizecs; i++)
+    for (int i = 0; i < sizecs; i++)
     {
         CS station;
         fin >> station;
@@ -185,13 +623,10 @@ int main()
             << "\n 2. Добавить трубу"
             << "\n 3. Добавить кс"
             << "\n 4. Показать все объекты"
-            << "\n 5. Редактировать трубу"
-            << "\n 6. Редактировать кс"
+            << "\n 5. Изменить трубы"
+            << "\n 6. Изменить кс"
             << "\n 7. Сохранить"
-            << "\n 8. Загрузить"
-            << "\n 9. Поиск кс по имени "
-            << "\n 10. Удалить трубу"
-            << "\n 11. Удалить кс\n";
+            << "\n 8. Загрузить\n";
         
         m = ProvNumber(1,11);
         switch (m)
@@ -238,14 +673,14 @@ int main()
 
         case 5:
         {   system("cls");
-            redactPipe(Pipeline);
+            redactPipeline(Pipeline);
             break;
         }
 
         case 6:
         {
             system("cls");
-           redactSatation(CSline);
+           redactCSline(CSline);
             break;
         }
         case 7:
@@ -278,6 +713,7 @@ int main()
         }
         case 8:
         {
+            system("cls");
             string name;
             cout << "Введите имя файла: " << endl;
             cin.ignore(23456, '\n');
@@ -290,43 +726,9 @@ int main()
             fin.close();
             break;
         }
-        case 9:
-        {
-         
-            break;
-        }
-        case 10:
-        {
-            DELETEPipe(Pipeline);
-            break;
-        }
-        case 11:
-        {
-            DELETECS(CSline);
-            break;
-        }
-        default:
-            cout << "Введите пункт из меню";
-            break;
-
-
-
+      
         }
 
     }
     return 0;
     }
-
-
-
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

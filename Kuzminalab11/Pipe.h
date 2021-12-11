@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <iostream>
 #include <fstream>
 class Pipe
 {
@@ -7,6 +8,7 @@ class Pipe
     int d;
     int l;
     bool r;
+    std::string name;
     static int MaxID;
 public:
  
@@ -18,6 +20,7 @@ public:
     int getD() { return d; }
     int getL() { return l; }
     bool getR() { return r; }
+    std::string getName() { return name; }
     void redact();
 
     friend std::ostream& operator <<(std::ostream& out, const Pipe& p);

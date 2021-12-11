@@ -17,10 +17,10 @@ public:
     static int getMaxID() { return MaxID; }
     int getId() { return id; }
 
-    int getCex() { return col_cex; }
-    int getWork() { return col_work; }
-    double getEffic() { return effic; }
-    std::string getName() { return name; }
+    int getCex()  const { return col_cex; }
+    int getWork() const { return col_work; }
+    double getEffic() const { return effic; }
+    std::string getName() const { return name; }
     void redact();
 
     friend std::ostream& operator <<(std::ostream& out, const CS& station);
