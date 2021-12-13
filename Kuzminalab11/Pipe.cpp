@@ -47,10 +47,10 @@ std::ofstream& operator<<(std::ofstream& fout, const Pipe& p)
     if (fout.is_open())
     {
         fout << p.id << endl
-            << p.name << endl
-            << p.d << endl
-            << p.l << endl
-            << p.r << endl;
+             << p.name << endl
+             << p.d << endl
+             << p.l << endl
+             << p.r << endl;
    }
     return fout;
 }

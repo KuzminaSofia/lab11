@@ -15,12 +15,12 @@ public:
     Pipe();
     static void setMaxID(const int id) { MaxID = id; }
     static int getMaxID() { return MaxID; }
-    int getId() { return id; }
+    int getId() const { return id; }
 
-    int getD() { return d; }
-    int getL() { return l; }
-    bool getR() { return r; }
-    std::string getName() { return name; }
+    int getD() const { return d; }
+    int getL() const { return l; }
+    bool getR() const { return r; }
+    std::string getName() const { return name; }
     void redact();
 
     friend std::ostream& operator <<(std::ostream& out, const Pipe& p);

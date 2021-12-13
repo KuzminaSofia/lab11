@@ -38,8 +38,8 @@ istream& operator >> (istream& in, CS& station)
     station.col_cex = ProvNumber(0, INT_MAX);
     cout << "—колько цехов в работе? ";                                                  // сколько цехов в работе?
     station.col_work = ProvNumber(0, station.col_cex);
-    cout << "Ёффективность цеха: ";
-    station.effic = ProvNumber(0.0, 100.0);
+   // cout << "Ёффективность цеха: ";
+    station.effic = (double(station.col_work) / double(station.col_cex))*100;
     return in;
 }
 std::ofstream& operator<<(std::ofstream& fout, const CS& station)
@@ -75,6 +75,7 @@ ostream& operator << (ostream& out, const CS& station)
 
 void CS::redact()
 {
-    cout << "—колько цехов в работе на станции сейчас?" << endl;
+    cout << " —колько цехов в работе на станции сейчас? " << endl;
     col_work = ProvNumber(0, col_cex);
-}
+    effic = (double(col_work) / double(col_cex)) * 100;
+} 
