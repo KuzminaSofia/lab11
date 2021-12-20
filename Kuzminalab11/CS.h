@@ -8,10 +8,13 @@ int id;
 std::string name;
 int col_cex;
 int col_work;
+
 double effic;
+bool connection;
 static int MaxID;
 
 public:
+    int col_pipe;
     CS();
     static void setMaxID(const int id) { MaxID = id; }
     static int getMaxID() { return MaxID; }
@@ -22,6 +25,8 @@ public:
     double getEffic() const { return effic; }
     std::string getName() const { return name; }
     void redact();
+    void link();
+    void ClearLink();
 
     friend std::ostream& operator <<(std::ostream& out, const CS& station);
     friend std::istream& operator >>(std::istream& in, CS& station);

@@ -10,11 +10,10 @@
 #include "Pipe.h"
 #include "CS.h"
 #include <unordered_set>
-
-
+#include "Graph.h"
+#include <set>
 
 using namespace std;
-
 
 template <typename T> 
 
@@ -112,38 +111,6 @@ void DELETE(T& line, int id)
         line.erase(id);
     
 }
-
-//void DELETEPipe(unordered_map<int, Pipe>& Pipeline)
-//{
-//    cout << "Введите ID трубы" << endl;
-//    for (;;)
-//    {
-//        int id = ProvNumber(0, Pipe::getMaxID());
-//        if (PoiskID(Pipeline, id) != 0)
-//        {
-//            DELETE(Pipeline, id);
-//            cout << "Труба удалена";
-//            return;
-//        }
-//        else cout << "Трубы с таким ID нет" << endl;
-//    }
-//}
-
-//void DELETECS(unordered_map<int, CS>& CSline)
-//{
-//    cout << "Введите ID станции" << endl;
-//    for (;;)
-//    {
-//        int id = ProvNumber(0, CS::getMaxID());
-//        if (PoiskID(CSline, id) != 0)
-//        {
-//            DELETE(CSline, id);
-//            cout << "Станция удалена";
-//            return;
-//        }
-//        else cout << "Станции с таким ID нет" << endl;
-//    }
-//}
 
 void PrintePipe( const unordered_map<int, Pipe>& PipeLine)
 {
@@ -671,6 +638,97 @@ void redactCSline(unordered_map<int, CS>& CSline)
     else cout << "Нет кс :( " << endl;
 }
 
+void CreatLink(unordered_map<int, Pipe>& PipeLine, unordered_map<int, CS>& CSline)
+{
+    cout << "Введите ID трубы, которую нужно присоединить " << endl;
+    int pipeid = PoiskID(PipeLine, ProvNumber(0, Pipe::getMaxID()));
+    while (PipeLine[pipeid].getR() != 0)
+    {
+        cout << " Труба в ремонте, введите другое ID" << endl;
+        pipeid = PoiskID(PipeLine, ProvNumber(0, Pipe::getMaxID()));
+    }
+    cout << "Введите ID кс, из которой выходит труба" << endl;
+    int out = PoiskID(CSline, ProvNumber(0, CS::getMaxID()));
+    cout << "Введите ID кс, в которую входит труба" << endl;
+    int in = PoiskID(CSline, ProvNumber(0, CS::getMaxID()));
+
+    if (CSline[in].col_pipe >= CSline[in].getWork() && CSline[out].col_pipe >= CSline[out].getWork())
+        cout << " Недостаточно рабочих цехов в станции" << endl;
+    if (pipeid != 0 && PipeLine[pipeid].pin == 0 && PipeLine[pipeid].pout == 0 && in != out && out != 0 && in != 0 && CSline[in].col_pipe < CSline[in].getWork() && CSline[out].col_pipe < CSline[out].getWork())
+    {
+        PipeLine[pipeid].link(in, out);
+        CSline[in].link();
+        CSline[out].link();
+    }
+    else cout << "Что-то пошло не так..." << endl;
+}
+
+vector<vector<int>> CreateGraph(const unordered_map<int, Pipe>& Pipeline, const unordered_map<int, CS>& CSline) {
+    set<int> vertices;
+    for (const auto& p : Pipeline)
+        if (p.second.pin >0 && p.second.pout> 0 && p.second.getR() == false && CSline.count(p.second.pin) && CSline.count(p.second.pout))
+        {
+            vertices.insert(p.second.pout);
+            vertices.insert(p.second.pin);
+        }
+
+    unordered_map<int, int> VerticesIndex;
+    int i = 0;
+    for (const int& v : vertices)
+        VerticesIndex.insert({ v, i++ });
+    vector<vector<int>> r;
+    r.resize(vertices.size());
+    for (const auto& p : Pipeline)
+        if (p.second.pin > 0 && p.second.pout > 0 && p.second.getR() == false)
+            r[VerticesIndex[p.second.pout]].push_back(VerticesIndex[p.second.pin]);
+    return r;
+}
+
+void DeleteLink(unordered_map<int, Pipe>& PipeLine, unordered_map<int, CS>& CSline)
+{
+    cout << "Введите ID трубы, которую хотите удалить: " << endl;
+    int pipeid = PoiskID(PipeLine, ProvNumber(0, Pipe::getMaxID()));
+    if (pipeid != 0 && PipeLine[pipeid].pin >0  && PipeLine[pipeid].pout > 0)
+    {
+            for (auto& p : PipeLine)
+            {
+                CSline[PipeLine[pipeid].pin].ClearLink();
+                CSline[PipeLine[pipeid].pout].ClearLink();
+                PipeLine[pipeid].ClearLink();
+            }
+            cout << "Удалено :) " << endl;
+    }
+    else   cout << "Такая труба не соединина в сеть" << endl;
+}
+
+void PrintLink(unordered_map<int, Pipe>& PipeLine)
+{
+    for (auto& p : PipeLine)
+        if (p.second.pin > 0 && p.second.pout > 0)
+            cout << "kc " << p.second.pout << " --> pipe " << p.first << " -->kc " << p.second.pin << ((p.second.getR() == true) ? " В ремонте " : " В работе ") << endl; 
+}
+
+vector<vector <int>> CreatGraph(unordered_map<int, Pipe>& PipeLine, unordered_map<int, CS>& CSline)
+{
+    unordered_set<int> gr;
+    for (auto& p : PipeLine)
+        if (p.second.pin > 0 && p.second.pout > 0 && p.second.getR() == 0)
+        {
+            gr.insert(p.second.pout);
+            gr.insert(p.second.pin);
+        }
+    unordered_map <int, int> index;
+    int i = 0;
+    for (auto& g : gr)
+        index.insert({ g, i++ });
+  vector<vector <int>> r;
+    r.resize(gr.size());
+    for (auto& p : PipeLine)
+        if (p.second.pin > 0 && p.second.pout > 0 && p.second.getR() == 0)
+            r[index[p.second.pout]].push_back(index[p.second.pin]);
+    return r;
+}
+
 void Savepipe(const unordered_map <int, Pipe>& Pipeline, ofstream& fout)
 {
     for (auto& p : Pipeline)
@@ -720,15 +778,18 @@ int main()
 
     for (;;) {
         cout << "\n 1.Выход"
-             << "\n 2. Добавить трубу"
-             << "\n 3. Добавить кс"
-             << "\n 4. Показать все объекты"
-             << "\n 5. Изменить трубы"
-             << "\n 6. Изменить кс"
-             << "\n 7. Сохранить"
-             << "\n 8. Загрузить\n";
-        
-        m = ProvNumber(1,8);
+            << "\n 2. Добавить трубу"
+            << "\n 3. Добавить кс"
+            << "\n 4. Показать все объекты"
+            << "\n 5. Изменить трубы"
+            << "\n 6. Изменить кс"
+            << "\n 7. Сохранить"
+            << "\n 8. Загрузить"
+            << "\n 9. Присоединить трубу"
+            << "\n 10. Удалить связи"
+            << "\n 11. Показать связи"
+            << "\n 12. Топологическая сортировка \n";
+        m = ProvNumber(1,12);
         switch (m)
         {
         case 1:
@@ -828,7 +889,46 @@ int main()
             fin.close();
             break;
         }
-      
+        case 9: // присоединить трубу к сети
+        {   
+            if (Pipeline.size() > 0 && CSline.size() > 1)
+                CreatLink(Pipeline, CSline);
+            else cout << " Недостаточно данных " << endl;
+            break;
+        }
+        case 10: // удаление трубы из сети
+        {
+            if (Pipeline.size() > 0 && CSline.size() > 1)
+                DeleteLink(Pipeline, CSline);
+            else cout << "Что-то пошло не так..." << endl;
+            break;
+        }
+        case 11: //показать связи
+        {
+            if (Pipeline.size() > 0 && CSline.size() > 1)
+                PrintLink(Pipeline);
+            else cout << " Добавьте связи " << endl;
+            break;
+        }
+        case 12:
+        {
+            
+            vector<vector<int>> r = CreateGraph(Pipeline, CSline);
+            Graph ESG(r);
+            set<int> vertices;
+            for (const auto& p : Pipeline)
+                if (p.second.pin > 0 && p.second.pout > 0 && p.second.getR() == false && CSline.count(p.second.pin) && CSline.count(p.second.pout))
+                {
+                    vertices.insert(p.second.pout);
+                    vertices.insert(p.second.pin);
+                }
+            unordered_map<int, int> VerticesIndex;
+            int i = 0;
+            for (const int& v : vertices)
+                VerticesIndex.insert({ i++, v });
+            ESG.TopSort(VerticesIndex);
+            break;
+        }
         }
 
     }

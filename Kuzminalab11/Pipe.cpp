@@ -13,6 +13,8 @@ Pipe::Pipe()
 	l = 0;
 	r = 0;
     name = "";
+    pin = 0;
+    pout = 0;
 }
 
 template <typename T>
@@ -47,10 +49,12 @@ std::ofstream& operator<<(std::ofstream& fout, const Pipe& p)
     if (fout.is_open())
     {
         fout << p.id << endl
-             << p.name << endl
-             << p.d << endl
-             << p.l << endl
-             << p.r << endl;
+            << p.name << endl
+            << p.d << endl
+            << p.l << endl
+            << p.r << endl
+            << p.pin << endl
+            << p.pout << endl;
    }
     return fout;
 }
@@ -65,6 +69,8 @@ std::ifstream& operator>>(std::ifstream& fin, Pipe& p)
         fin >> p.d;
         fin >> p.l;
         fin >> p.r;
+        fin >> p.pin;
+        fin >> p.pout;
  }
     return fin;
 }
@@ -80,4 +86,21 @@ void Pipe::redact()
 {
     r = !r;
 }
+
+void Pipe::link(int in, int out)
+{
+    if (pin == 0 && pout == 0 && in != out)
+    {
+        pin = in;
+        pout = out;
+    }
+    else cout << "hyuna" << endl;
+}
+
+void Pipe::ClearLink()
+{
+    pin = 0;
+    pout = 0;
+}
+
 

@@ -11,7 +11,7 @@ class Pipe
     std::string name;
     static int MaxID;
 public:
- 
+    int pin, pout;
     Pipe();
     static void setMaxID(const int id) { MaxID = id; }
     static int getMaxID() { return MaxID; }
@@ -22,6 +22,9 @@ public:
     bool getR() const { return r; }
     std::string getName() const { return name; }
     void redact();
+
+    void link(int in, int out);
+    void ClearLink();
 
     friend std::ostream& operator <<(std::ostream& out, const Pipe& p);
     friend std::istream& operator >>(std::istream& in, Pipe& p);

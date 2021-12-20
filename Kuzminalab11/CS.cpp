@@ -13,6 +13,8 @@ CS::CS()
 	col_cex = 0;
 	col_work = 0;
 	effic = 0;
+    col_pipe = 0;
+    connection = false;
 }
 template <typename T>
 
@@ -29,6 +31,8 @@ T ProvNumber(T min, T max)   //proverka
 
 }
 
+
+
 istream& operator >> (istream& in, CS& station)
 {
     cout << "¬ведите им€ кс: ";
@@ -38,7 +42,6 @@ istream& operator >> (istream& in, CS& station)
     station.col_cex = ProvNumber(0, INT_MAX);
     cout << "—колько цехов в работе? ";                                                  // сколько цехов в работе?
     station.col_work = ProvNumber(0, station.col_cex);
-   // cout << "Ёффективность цеха: ";
     station.effic = (double(station.col_work) / double(station.col_cex))*100;
     return in;
 }
@@ -50,7 +53,8 @@ std::ofstream& operator<<(std::ofstream& fout, const CS& station)
             << station.name << endl
             << station.col_cex << endl
             << station.col_work << endl
-            << station.effic << endl;
+            << station.effic << endl
+            << station.connection << endl;
     }
     return fout;
 }
@@ -64,6 +68,7 @@ std::ifstream& operator>>(std::ifstream& fin, CS& station)
         fin >> station.col_cex;
         fin >> station.col_work;
         fin >> station.effic;
+        fin >> station.connection;
 }
     return fin;
 }
@@ -78,4 +83,17 @@ void CS::redact()
     cout << " —колько цехов в работе на станции сейчас? " << endl;
     col_work = ProvNumber(0, col_cex);
     effic = (double(col_work) / double(col_cex)) * 100;
-} 
+}
+void CS::link()
+{
+    if (connection == false)
+        connection == true;
+    if (col_pipe < col_work)
+        col_pipe++;
+    else cout << " Ќедостаточно рабочих цехов в станции" << endl;
+}
+
+void CS::ClearLink()
+{
+    connection = false;
+}
